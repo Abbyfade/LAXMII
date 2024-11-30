@@ -119,7 +119,7 @@ exports.resendOTP = async (req, res) => {
     // Generate a new OTP
     const otp = generateOTP();
     user.otp = otp;
-    user.otpExpiry = Date.now() + 10 * 60 * 1000; // Valid for 10 minutes
+    user.otpExpiry = Date.now() + 10 * 60 *1000; // Valid for 10 minutes
     await user.save();
 
     // Send OTP to email
