@@ -137,3 +137,64 @@ exports.resendOTP = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// Forgot Password Function
+exports.forgotPassword = async (req, res) => {
+  try {
+      const { email } = req.body;
+
+      // Find the user by email
+      const user = await User.findOne({ email });
+      if (!user) return res.status(400).json({ message: "User not found" });
+
+      // Generate a new OTP for password reset
+      const resetOtp = generateOTP();
+      user.resetOtp = resetOtp;
+      user.resetOtpExpiry = Date.now() + 10 * 60 * 1000; // Valid for 10 minutes
+      await user.save();
+
+      // Send OTP to email
+      const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: email,
+          subject: "Reset Your Password",
+          text: `Your OTP for resetting your password is: ${resetOtp}. It is valid for 10 minutes.`,
+      };
+
+      await transporter.sendMail(mailOptions);
+
+      res.status(200).json({ message: "OTP sent to your email." });
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
+};
+
+// Verify Reset OTP Function
+exports.verifyResetOTP = async (req, res) => {
+  try {
+      const { email, otp, newPassword } = req.body;
+
+      // Find the user by email
+      const user = await User.findOne({ email });
+      if (!user) return res.status(400).json({ message: "User not found" });
+
+      // Check if OTP matches and is not expired
+      if (user.resetOtp !== otp) return res.status(400).json({ message: "Invalid OTP" });
+      if (user.resetOtpExpiry < Date.now()) return res.status(400).json({ message: "OTP expired" });
+
+      // Hash the new password and save it
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
+      user.password = hashedPassword;
+      
+      // Clear reset OTP fields
+      user.resetOtp = null;
+      user.resetOtpExpiry = null;
+      
+      await user.save();
+
+      res.status(200).json({ message: "Password has been reset successfully!" });
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
+};
