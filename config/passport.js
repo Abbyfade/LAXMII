@@ -1,6 +1,7 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const User = require("../models/User"); // Import your user model
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 // Configure Google Strategy
 passport.use(
@@ -12,11 +13,10 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // Check if user exists in the database
+        // Find or create the user
         let user = await User.findOne({ googleId: profile.id });
 
         if (!user) {
-          // Create a new user if it doesn't exist
           user = await User.create({
             googleId: profile.id,
             name: profile.displayName,
@@ -25,7 +25,7 @@ passport.use(
           });
         }
 
-        return done(null, user);
+        return done(null, user); // Pass user to serializeUser
       } catch (error) {
         return done(error, null);
       }
@@ -38,7 +38,7 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-// Deserialize user
+// Deserialize user for session
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
