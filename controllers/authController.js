@@ -22,7 +22,7 @@ exports.signup = async (req, res) => {
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "User already exists" });
+    if (existingUser) return res.status(400).json({ status:False, message: "User already exists" });
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -51,9 +51,9 @@ exports.signup = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    res.status(201).json({ message: "User created! Please verify your email with the OTP." });
+    res.status(201).json({ status: true, message: "User created! Please verify your email with the OTP." });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ status: false, error: err.message });
   }
 };
 
@@ -64,11 +64,11 @@ exports.verifyOTP = async (req, res) => {
 
     // Find the user by email
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "User not found" });
+    if (!user) return res.status(400).json({ status: false, message: "User not found" });
 
     // Check if OTP matches and is not expired
-    if (user.otp !== otp) return res.status(400).json({ message: "Invalid OTP" });
-    if (user.otpExpiry < Date.now()) return res.status(400).json({ message: "OTP expired" });
+    if (user.otp !== otp) return res.status(400).json({ status: false, message: "Invalid OTP" });
+    if (user.otpExpiry < Date.now()) return res.status(400).json({ status: false, message: "OTP expired" });
 
     // Verify user and clear OTP fields
     user.verified = true;
@@ -76,9 +76,9 @@ exports.verifyOTP = async (req, res) => {
     user.otpExpiry = null;
     await user.save();
 
-    res.status(200).json({ message: "Email verified successfully!" });
+    res.status(200).json({ status: true, message: "Email verified successfully!" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ status: false, error: err.message });
   }
 };
 
@@ -90,20 +90,20 @@ exports.login = async (req, res) => {
     // Find user by email
     const user = await User.findOne({ email });
     const name = user.name;
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    if (!user) return res.status(400).json({ status: false, message: "Invalid credentials" });
 
     // Check if email is verified
-    if (!user.verified) return res.status(400).json({ message: "Please verify your email first" });
+    if (!user.verified) return res.status(400).json({ status: false, message: "Please verify your email first" });
 
     // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+    if (!isMatch) return res.status(400).json({ status: false, message: "Invalid credentials" });
 
     // Generate JWT
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.status(200).json({ name, email, token });
+    res.status(200).json({ status: true, name, email, token });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ status: false, error: err.message });
   }
 };
 
@@ -114,7 +114,7 @@ exports.resendOTP = async (req, res) => {
 
     // Find the user by email
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "User not found" });
+    if (!user) return res.status(400).json({ status: false, message: "User not found" });
 
     // Generate a new OTP
     const otp = generateOTP();
@@ -132,9 +132,9 @@ exports.resendOTP = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    res.status(200).json({ message: "New OTP sent to your email." });
+    res.status(200).json({ status: true, message: "New OTP sent to your email." });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ status: false, error: err.message });
   }
 };
 
@@ -145,7 +145,7 @@ exports.forgotPassword = async (req, res) => {
 
       // Find the user by email
       const user = await User.findOne({ email });
-      if (!user) return res.status(400).json({ message: "User not found" });
+      if (!user) return res.status(400).json({ status: false, message: "User not found" });
 
       // Generate a new OTP for password reset
       const resetOtp = generateOTP();
@@ -163,9 +163,9 @@ exports.forgotPassword = async (req, res) => {
 
       await transporter.sendMail(mailOptions);
 
-      res.status(200).json({ message: "OTP sent to your email." });
+      res.status(200).json({ status: true, message: "OTP sent to your email." });
   } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ status:false, error: err.message });
   }
 };
 
@@ -176,11 +176,11 @@ exports.verifyResetOTP = async (req, res) => {
 
       // Find the user by email
       const user = await User.findOne({ email });
-      if (!user) return res.status(400).json({ message: "User not found" });
+      if (!user) return res.status(400).json({ status: false, message: "User not found" });
 
       // Check if OTP matches and is not expired
-      if (user.resetOtp !== otp) return res.status(400).json({ message: "Invalid OTP" });
-      if (user.resetOtpExpiry < Date.now()) return res.status(400).json({ message: "OTP expired" });
+      if (user.resetOtp !== otp) return res.status(400).json({ status: false, message: "Invalid OTP" });
+      if (user.resetOtpExpiry < Date.now()) return res.status(400).json({ status: false, message: "OTP expired" });
 
       // Hash the new password and save it
       const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -193,8 +193,8 @@ exports.verifyResetOTP = async (req, res) => {
       
       await user.save();
 
-      res.status(200).json({ message: "Password has been reset successfully!" });
+      res.status(200).json({ status: true, message: "Password has been reset successfully!" });
   } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ status: false, error: err.message });
   }
 };
