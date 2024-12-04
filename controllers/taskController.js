@@ -21,9 +21,9 @@ exports.createTask = async (req, res) => {
 
     await newTask.save();
 
-    res.status(201).json({ message: "Task created successfully", task: newTask });
+    res.status(201).json({ status: true, message: "Task created successfully", task: newTask });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ status: false, error: err.message });
   }
 };
 
@@ -32,9 +32,9 @@ exports.getAllTasks = async (req, res) => {
   try {
     const userId = req.user.id; // Get the logged-in user's ID
     const tasks = await Task.find({ user: userId }); // Find tasks belonging to the logged-in user
-    res.status(200).json(tasks);
+    res.status(201).json({status: true, tasks});
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ status: false, error: err.message });
   }
 };
 
@@ -45,12 +45,12 @@ exports.getTaskById = async (req, res) => {
     const task = await Task.findById(taskId);
 
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({ status: false, message: "Task not found" });
     }
 
-    res.status(200).json(task);
+    res.status(201).json({status: true, task});
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ status: false, error: err.message });
   }
 };
 
@@ -67,12 +67,12 @@ exports.updateTask = async (req, res) => {
     );
 
     if (!updatedTask) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({ status: fasle, message: "Task not found" });
     }
 
-    res.status(200).json({ message: "Task updated successfully", task: updatedTask });
+    res.status(201).json({ status: true, message: "Task updated successfully", task: updatedTask });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ status: false, error: err.message });
   }
 };
 
@@ -84,11 +84,11 @@ exports.deleteTask = async (req, res) => {
     const deletedTask = await Task.findByIdAndDelete(taskId);
 
     if (!deletedTask) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({status: false, message: "Task not found" });
     }
 
-    res.status(200).json({ message: "Task deleted successfully" });
+    res.status(201).json({ status: true, message: "Task deleted successfully" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({status: false, error: err.message });
   }
 };

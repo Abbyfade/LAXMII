@@ -18,9 +18,9 @@ exports.createInvoice = async (req, res) => {
     });
 
     await invoice.save();
-    res.status(201).json({ message: "Invoice created successfully", invoice });
+    res.status(201).json({ status: true, message: "Invoice created successfully", invoice });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ status: false, error: error.message });
   }
 };
 
@@ -37,9 +37,9 @@ exports.getInvoices = async (req, res) => {
   
       // Fetch invoices
       const invoices = await Invoice.find(filter).sort({ createdAt: -1 });
-      res.json({ invoices });
+      res.status(201).json({ status: true, invoices });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ status: false, error: error.message });
     }
   };
 
@@ -49,22 +49,22 @@ exports.updateInvoiceStatus = async (req, res) => {
         const { status } = req.body;
 
         if (!["paid"].includes(status)) {
-        return res.status(400).json({ message: "Invalid status update" });
+        return res.status(400).json({ status: false, message: "Invalid status update" });
         }
 
         const invoice = await Invoice.findById(id);
 
         if (!invoice) {
-        return res.status(404).json({ message: "Invoice not found" });
+        return res.status(404).json({ status: false, message: "Invoice not found" });
         }
 
         // Update the status
         invoice.status = status;
         await invoice.save();
 
-        res.json({ message: "Invoice status updated", invoice });
+        res.status(201).json({ status: true, message: "Invoice status updated", invoice });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ status: false, error: error.message });
     }
 };
   
