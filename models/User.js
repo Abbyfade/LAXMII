@@ -8,8 +8,6 @@ const userSchema = new mongoose.Schema({
   otp: { type: String }, // Store OTP
   otpExpiry: { type: Date }, // Store OTP expiration time
   googleId: { type: String }, // Store Google user ID
-  resetOtp: { type: String, required: false },
-  resetOtpExpiry: { type: Date, required: false}
   },
   { timestamps: true }
 );
