@@ -43,6 +43,21 @@ exports.getInvoices = async (req, res) => {
     }
   };
 
+// READ a single invoice item by ID
+exports.getInvoiceById = async (req, res) => {
+  try {
+    const invoice = await Invoice.findById(req.params.id);
+
+    if (!invoice) {
+      return res.status(404).json({ status: false, message: "Invoice not found" });
+    }
+
+    res.status(200).json({status: true, invoice});
+  } catch (err) {
+    res.status(500).json({ status: false, message: "Error fetching invoice", error: err.message });
+  }
+};
+
 exports.updateInvoiceStatus = async (req, res) => {
     try {
         const { id } = req.params; // Invoice ID

@@ -38,12 +38,12 @@ exports.getInventoryById = async (req, res) => {
     const inventory = await Inventory.findById(req.params.id);
 
     if (!inventory) {
-      return res.status(404).json({ status: False, message: "Inventory not found" });
+      return res.status(404).json({ status: false, message: "Inventory not found" });
     }
 
-    res.status(200).json({status: True, inventory});
+    res.status(200).json({status: true, inventory});
   } catch (err) {
-    res.status(500).json({ status: False, message: "Error fetching inventory", error: err.message });
+    res.status(500).json({ status: false, message: "Error fetching inventory", error: err.message });
   }
 };
 
@@ -62,9 +62,9 @@ exports.updateInventory = async (req, res) => {
       return res.status(404).json({ status: False, message: "Inventory not found" });
     }
 
-    res.status(200).json({status: True, updatedInventory});
+    res.status(200).json({status: true, updatedInventory});
   } catch (err) {
-    res.status(500).json({ status: False, message: "Error updating inventory", error: err.message });
+    res.status(500).json({ status: false, message: "Error updating inventory", error: err.message });
   }
 };
 
@@ -74,11 +74,11 @@ exports.deleteInventory = async (req, res) => {
     const deletedInventory = await Inventory.findByIdAndDelete(req.params.id);
 
     if (!deletedInventory) {
-      return res.status(404).json({ status: False, message: "Inventory not found" });
+      return res.status(404).json({ status: false, message: "Inventory not found" });
     }
 
-    res.status(200).json({ status: True, message: "Inventory deleted successfully" });
+    res.status(200).json({ status: true, message: "Inventory deleted successfully" });
   } catch (err) {
-    res.status(500).json({ status: False, message: "Error deleting inventory", error: err.message });
+    res.status(500).json({ status: false, message: "Error deleting inventory", error: err.message });
   }
 };

@@ -7,6 +7,7 @@ cron.schedule("0 0 * * *", async () => {
 
   try {
     const now = new Date();
+    console.log("Current time:", now.toISOString());
 
     // Find invoices that are unpaid and past their due date
     const overdueInvoices = await Invoice.updateMany(
