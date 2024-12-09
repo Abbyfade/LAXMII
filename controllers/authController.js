@@ -89,7 +89,6 @@ exports.login = async (req, res) => {
 
     // Find user by email
     const user = await User.findOne({ email });
-    const name = user.name;
     if (!user) return res.status(400).json({ status: false, message: "Invalid credentials" });
 
     // Check if email is verified
@@ -98,6 +97,9 @@ exports.login = async (req, res) => {
     // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ status: false, message: "Invalid credentials" });
+
+    // Get user name
+    const name = user.name;
 
     // Generate JWT
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
