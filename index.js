@@ -20,9 +20,6 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
 };
 
-// app.use(cors(corsOptions));
-app.use(cors());
-
 
 
 const app = express();
@@ -37,6 +34,9 @@ app.use(
       saveUninitialized: false,
     })
   );
+
+// app.use(cors(corsOptions));
+app.use(cors());
   
 app.use(passport.initialize());
 app.use(passport.session());
