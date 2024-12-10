@@ -20,7 +20,7 @@ router.get(
     );
 
     // Send token as response
-    res.json({ token });
+    res.status(201).json({ status: true, token });
   }
 );
 
