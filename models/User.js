@@ -8,8 +8,10 @@ const userSchema = new mongoose.Schema({
   otp: { type: String }, // Store OTP
   otpExpiry: { type: Date }, // Store OTP expiration time
   googleId: { type: String }, // Store Google user ID
+  refreshToken: {type: String},
   },
   { timestamps: true }
+
 );
 
 module.exports = mongoose.model("User", userSchema);

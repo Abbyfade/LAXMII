@@ -102,8 +102,15 @@ exports.login = async (req, res) => {
     const name = user.name;
 
     // Generate JWT
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.status(200).json({ status: true, name, email, token });
+    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
+
+    // Generate refresh token (long-lived)
+    const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.status(200).json({ status: true, name, email, accessToken, refreshToken });
   } catch (err) {
     res.status(500).json({ status: false, error: err.message });
   }
@@ -191,5 +198,51 @@ exports.resetPassword = async (req, res) => {
       res.status(200).json({ status: true, message: "Password has been reset successfully!" });
   } catch (err) {
       res.status(500).json({ status: false, error: err.message });
+  }
+};
+
+exports.refreshToken = async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(401).json({ status: false, message: "Refresh token required" });
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+
+    // Optionally verify refresh token from the database
+    const user = await User.findById(payload.id);
+    if (!user || user.refreshToken !== token) {
+      return res.status(403).json({ status: false, message: "Invalid refresh token" });
+    }
+
+    // Generate new access token
+    const newAccessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
+
+    res.status(200).json({ status: true, accessToken: newAccessToken });
+  } catch (error) {
+    return res.status(403).json({ status: false, message: "Invalid or expired refresh token" });
+  }
+};
+
+
+// Logout endpoint (for JWT)
+exports.logout = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(400).json({ message: "Refresh token required" });
+    }
+  
+    // Optionally remove the refresh token from the database
+    const user = await User.findOneAndUpdate({ refreshToken }, { refreshToken: null });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid refresh token" });
+    }
+    res.status(200).json({ status: true, message: "Logged out successfully" });
+  } catch (error) {
+    res.status(500).json({ status: false, message: "Error logging out" });
   }
 };
