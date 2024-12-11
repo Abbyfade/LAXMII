@@ -233,13 +233,13 @@ exports.logout = async (req, res) => {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
-      return res.status(400).json({ message: "Refresh token required" });
+      return res.status(400).json({ status: false, message: "Refresh token required" });
     }
   
     // Optionally remove the refresh token from the database
     const user = await User.findOneAndUpdate({ refreshToken }, { refreshToken: null });
     if (!user) {
-      return res.status(400).json({ message: "Invalid refresh token" });
+      return res.status(400).json({ status: false, message: "Invalid refresh token" });
     }
     res.status(200).json({ status: true, message: "Logged out successfully" });
   } catch (error) {
