@@ -14,7 +14,7 @@ exports.createSales = async (req, res) => {
     });
 
     const savedSales = await newSales.save();
-    res.status(201).json({status: true, savedSales});
+    res.status(201).json({status: true, message: "Sales created successfully", savedSales});
   } catch (err) {
     res.status(500).json({ status: false, message: "Error creating Sales", error: err.message });
   }

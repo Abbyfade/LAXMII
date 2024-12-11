@@ -15,7 +15,7 @@ exports.createInventory = async (req, res) => {
     });
 
     const savedInventory = await newInventory.save();
-    res.status(201).json({status: true, savedInventory});
+    res.status(201).json({status: true, message: "Inventory created successfully", savedInventory});
   } catch (err) {
     res.status(500).json({ status: false, message: "Error creating inventory", error: err.message });
   }
@@ -62,7 +62,7 @@ exports.updateInventory = async (req, res) => {
       return res.status(404).json({ status: False, message: "Inventory not found" });
     }
 
-    res.status(200).json({status: true, updatedInventory});
+    res.status(200).json({status: true, message: "Inventory updated successfully", updatedInventory});
   } catch (err) {
     res.status(500).json({ status: false, message: "Error updating inventory", error: err.message });
   }
