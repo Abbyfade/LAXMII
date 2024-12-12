@@ -23,7 +23,7 @@ exports.getAllTransactions = async (req, res) => {
             _id: sale._id,
             type: 'sales', 
             transactionType: 'money_in', 
-            inventory: sales.inventory, 
+            inventory: sale.inventory, 
             amount: sale.amount,
             customerName: sale.customerName, 
             createdAt: sale.createdAt
