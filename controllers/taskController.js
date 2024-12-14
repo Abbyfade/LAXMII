@@ -66,7 +66,7 @@ exports.updateTask = async (req, res) => {
     );
 
     if (!updatedTask) {
-      return res.status(404).json({ status: fasle, message: "Task not found" });
+      return res.status(404).json({ status: false, message: "Task not found" });
     }
 
     res.status(201).json({ status: true, message: "Task updated successfully", task: updatedTask });
