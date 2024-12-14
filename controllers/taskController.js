@@ -13,7 +13,6 @@ exports.createTask = async (req, res) => {
     const newTask = new Task({
       title,
       priority,
-      completed,
       date,
       time,
       user: userId, // Assign the task to the user
