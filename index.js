@@ -1,5 +1,7 @@
 require("dotenv").config();
 require("./config/passport");
+
+const authMiddleware = require("./middleware/authMiddleware.js");
 const express = require("express");
 const session = require("express-session");
 const passport = require("passport");
@@ -12,6 +14,9 @@ const inventoryRoutes = require("./routes/inventoryUrls");
 const salesRoutes = require("./routes/salesUrls");
 const expenseRoutes = require("./routes/expenseUrls");
 const transactionsRoutes = require("./routes/transactionsUrls");
+const { 
+  generateInvoiceNumber
+} = require("./controllers/invoiceController");
 const cron = require('./utils/invoiceCron');
 
 const cors = require('cors');
@@ -51,6 +56,8 @@ app.use("/api/inventory", inventoryRoutes);
 app.use("/api/sales", salesRoutes);
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/transactions", transactionsRoutes)
+
+app.get("/api/get-invoice-no", authMiddleware, generateInvoiceNumber);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

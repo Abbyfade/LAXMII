@@ -4,7 +4,7 @@ const {
   createInvoice, 
   getInvoices, 
   getInvoiceById,
-  updateInvoiceStatus 
+  updateInvoiceStatus,
 } = require("../controllers/invoiceController");
 const router = express.Router();
 

@@ -1,4 +1,5 @@
 const Invoice = require("../models/Invoice");
+const crypto = require("crypto");
 
 exports.createInvoice = async (req, res) => {
   try {
@@ -83,4 +84,37 @@ exports.updateInvoiceStatus = async (req, res) => {
     }
 };
   
-  
+function createRandomInvoiceNumber() {
+  return `#${crypto.randomInt(10000, 99999)}`; // Example: INV-123456
+}
+
+// Controller to generate unique invoice number
+exports.generateInvoiceNumber = async (req, res) => {
+  try {
+      let isUnique = false;
+      let invoiceNumber;
+
+      // Loop until a unique invoice number is generated
+      while (!isUnique) {
+          invoiceNumber = createRandomInvoiceNumber();
+          const existingInvoice = await Invoice.findOne({ invoiceNumber });
+
+          if (!existingInvoice) {
+              isUnique = true;
+          }
+      }
+
+      // Return the unique invoice number
+      res.status(200).json({
+          status: true,
+          invoiceNumber: invoiceNumber
+      });
+
+  } catch (error) {
+      console.error('Error generating invoice number:', error.message);
+      res.status(500).json({
+          status: false,
+          message: 'Server error while generating invoice number'
+      });
+  }
+};
