@@ -12,7 +12,7 @@ const taskSchema = new mongoose.Schema({
   },
   priority: {
     type: String,
-    enum: ["High", "Low"],  
+    enum: ["week", "month", "year"],  
     required: true,
   },
   completed: {
@@ -23,10 +23,10 @@ const taskSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,  // Default to the current date
   },
-  time: {
-    type: String,  
-    required: true,
-  },
+  // time: {
+  //   type: String,  
+  //   required: true,
+  // },
 });
 
 module.exports = mongoose.model("Task", taskSchema);

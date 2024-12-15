@@ -4,7 +4,7 @@ const User = require("../models/User");
 // Create a new task
 exports.createTask = async (req, res) => {
   try {
-    const { title, priority, completed, date, time } = req.body;
+    const { title, priority} = req.body;
 
     // Get the logged-in user from the token
     const userId = req.user.id; // Assuming user is authenticated and user ID is available in req.user
@@ -13,8 +13,6 @@ exports.createTask = async (req, res) => {
     const newTask = new Task({
       title,
       priority,
-      date,
-      time,
       user: userId, // Assign the task to the user
     });
 
@@ -57,11 +55,11 @@ exports.getTaskById = async (req, res) => {
 exports.updateTask = async (req, res) => {
   try {
     const taskId = req.params.taskId;
-    const { title, priority, completed, date, time } = req.body;
+    const { title, priority, completed } = req.body;
 
     const updatedTask = await Task.findByIdAndUpdate(
       taskId,
-      { title, priority, completed, date, time },
+      { title, priority, completed },
       { new: true } // Return the updated task
     );
 
