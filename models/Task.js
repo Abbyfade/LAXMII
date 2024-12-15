@@ -1,13 +1,18 @@
 const mongoose = require("mongoose");
 
 const taskSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   title: {
     type: String,
     required: true,
   },
   priority: {
     type: String,
-    enum: ["High", "Low"],  
+    enum: ["week", "month", "year"],  
     required: true,
   },
   completed: {
@@ -18,15 +23,10 @@ const taskSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,  // Default to the current date
   },
-  time: {
-    type: String,  
-    required: true,
-  },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",  // Reference to the User model
-    required: true,
-  },
+  // time: {
+  //   type: String,  
+  //   required: true,
+  // },
 });
 
 module.exports = mongoose.model("Task", taskSchema);
