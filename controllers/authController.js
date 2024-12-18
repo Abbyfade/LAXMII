@@ -102,7 +102,7 @@ exports.login = async (req, res) => {
     const name = user.name;
 
     // Generate JWT
-    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
+    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "2hr" });
 
     // Generate refresh token (long-lived)
     const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
